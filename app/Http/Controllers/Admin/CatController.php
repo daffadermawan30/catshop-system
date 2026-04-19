@@ -3,63 +3,133 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreCatRequest;
+use App\Http\Requests\UpdateCatRequest;
+use App\Models\Cat;
+use App\Models\Customer;
+use Illuminate\Support\Facades\Storage;
 
 class CatController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * index() — Daftar semua kucing
+     * URL: GET /admin/cats
      */
     public function index()
     {
-        //
+        $cats = Cat::with('customer')
+            ->where('is_active', true)
+            ->latest()
+            ->paginate(12);
+
+        return view('admin.cats.index', compact('cats'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * create() — Form tambah kucing baru
+     * URL: GET /admin/cats/create
      */
     public function create()
     {
-        //
+        // Ambil daftar pelanggan untuk dropdown
+        $customers = Customer::orderBy('name')->get();
+        return view('admin.cats.create', compact('customers'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * store() — Simpan kucing baru
+     * URL: POST /admin/cats
      */
-    public function store(Request $request)
+    public function store(StoreCatRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        // Proses upload foto jika ada
+        if ($request->hasFile('photo')) {
+            // store('cats', 'public') = simpan di storage/app/public/cats/
+            // Laravel otomatis generate nama file unik
+            $data['photo'] = $request->file('photo')->store('cats', 'public');
+        }
+
+        // Pastikan is_sterilized ada nilainya (checkbox)
+        $data['is_sterilized'] = $request->boolean('is_sterilized');
+
+        Cat::create($data);
+
+        return redirect()
+            ->route('admin.cats.index')
+            ->with('success', 'Data kucing berhasil ditambahkan.');
     }
 
     /**
-     * Display the specified resource.
+     * show() — Halaman detail kucing + seluruh riwayat
+     * URL: GET /admin/cats/{cat}
      */
-    public function show(string $id)
+    public function show(Cat $cat)
     {
-        //
+        $cat->load([
+            'customer',
+            'groomingBookings' => function ($query) {
+                $query->with('package')->latest();
+            },
+            'boardingBookings' => function ($query) {
+                $query->with('room.roomType')->latest();
+            },
+        ]);
+
+        return view('admin.cats.show', compact('cat'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * edit() — Form edit kucing
+     * URL: GET /admin/cats/{cat}/edit
      */
-    public function edit(string $id)
+    public function edit(Cat $cat)
     {
-        //
+        $customers = Customer::orderBy('name')->get();
+        return view('admin.cats.edit', compact('cat', 'customers'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * update() — Simpan perubahan data kucing
+     * URL: PUT /admin/cats/{cat}
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCatRequest $request, Cat $cat)
     {
-        //
+        $data = $request->validated();
+        $data['is_sterilized'] = $request->boolean('is_sterilized');
+
+        // Proses ganti foto jika ada upload baru
+        if ($request->hasFile('photo')) {
+            // Hapus foto lama dari storage agar tidak menumpuk
+            if ($cat->photo) {
+                Storage::disk('public')->delete($cat->photo);
+            }
+            $data['photo'] = $request->file('photo')->store('cats', 'public');
+        } else {
+            // Jika tidak ada upload baru, tetap pakai foto lama
+            unset($data['photo']);
+        }
+
+        $cat->update($data);
+
+        return redirect()
+            ->route('admin.cats.show', $cat)
+            ->with('success', 'Data kucing berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * destroy() — Nonaktifkan kucing (soft delete)
+     * URL: DELETE /admin/cats/{cat}
      */
-    public function destroy(string $id)
+    public function destroy(Cat $cat)
     {
-        //
+        // Kita tidak hapus permanen karena data historis tetap dibutuhkan
+        // Cukup tandai is_active = false
+        $cat->update(['is_active' => false]);
+
+        return redirect()
+            ->route('admin.cats.index')
+            ->with('success', 'Data kucing berhasil dinonaktifkan.');
     }
 }

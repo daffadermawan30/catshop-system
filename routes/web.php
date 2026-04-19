@@ -24,17 +24,12 @@ Route::prefix('admin')
     ->middleware(['auth', 'role:admin'])
     ->group(function () {
 
-        // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
-        // Manajemen pelanggan
         Route::resource('customers', CustomerController::class);
-
-        // Manajemen kucing
         Route::resource('cats', CatController::class);
     });
-
 /*
 |--------------------------------------------------------------------------
 | Routes Pelanggan (akan ditambah di sprint berikutnya)
