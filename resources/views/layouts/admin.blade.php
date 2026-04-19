@@ -45,17 +45,31 @@
                     <span>🐱</span> Data Kucing
                 </a>
 
-                <div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Layanan</div>
+                <div class="pt-4 pb-1 text-orange-<div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Layanan</div>
 
-                <a href="#"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition text-orange-300">
-                    <span>✂️</span> Grooming <span class="ml-auto text-xs bg-orange-600 px-1.5 rounded">Soon</span>
-                </a>
+<a href="{{ route('admin.grooming-packages.index') }}"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+          {{ request()->routeIs('admin.grooming-packages.*') ? 'bg-orange-700' : '' }}">
+    <span>📦</span> Paket Grooming
+</a>
 
-                <a href="#"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition text-orange-300">
-                    <span>🏠</span> Penitipan <span class="ml-auto text-xs bg-orange-600 px-1.5 rounded">Soon</span>
-                </a>
+<a href="{{ route('admin.grooming-bookings.index') }}"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+          {{ request()->routeIs('admin.grooming-bookings.*') ? 'bg-orange-700' : '' }}">
+    <span>✂️</span> Booking Grooming
+</a>
+
+<a href="{{ route('admin.grooming-calendar') }}"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+          {{ request()->routeIs('admin.grooming-calendar*') ? 'bg-orange-700' : '' }}">
+    <span>📅</span> Kalender Jadwal
+</a>
+
+<a href="#"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition text-orange-300">
+    <span>🏠</span> Penitipan
+    <span class="ml-auto text-xs bg-orange-600 px-1.5 rounded">Sprint 4</span>
+</a>
             </nav>
 
             {{-- Info User yang Login --}}

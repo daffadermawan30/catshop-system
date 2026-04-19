@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCatRequest;
 use App\Http\Requests\UpdateCatRequest;
 use App\Models\Cat;
 use App\Models\Customer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CatController extends Controller
@@ -15,8 +16,19 @@ class CatController extends Controller
      * index() — Daftar semua kucing
      * URL: GET /admin/cats
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->format === 'json') {
+            $cats = Cat::where('is_active', true)
+                ->when(
+                    $request->customer_id,
+                    fn($q) => $q->where('customer_id', $request->customer_id)
+                )
+                ->get(['id', 'name', 'breed']);
+
+            return response()->json($cats);
+        }
+
         $cats = Cat::with('customer')
             ->where('is_active', true)
             ->latest()
