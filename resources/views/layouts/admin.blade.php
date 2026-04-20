@@ -15,61 +15,122 @@
     {{-- Wrapper utama --}}
     <div class="flex h-screen overflow-hidden">
 
-        {{-- SIDEBAR --}}
-        <aside class="w-64 bg-orange-800 text-white flex flex-col fixed h-full z-10">
-            {{-- Logo / Nama Aplikasi --}}
-            <div class="p-6 border-b border-orange-700">
-                <h1 class="text-xl font-bold">🐱 CatShop</h1>
-                <p class="text-orange-300 text-sm">Panel Admin</p>
-            </div>
 
-            {{-- Menu Navigasi --}}
-            <nav class="flex-1 p-4 space-y-1">
-                <a href="{{ route('admin.dashboard') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-                          {{ request()->routeIs('admin.dashboard') ? 'bg-orange-700' : '' }}">
-                    <span>📊</span> Dashboard
-                </a>
+{{-- SIDEBAR --}}
+    <aside class="w-64 bg-orange-800 text-white flex flex-col fixed h-full z-10 overflow-y-auto">
 
-                <div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Manajemen</div>
+        {{-- Logo --}}
+        <div class="p-6 border-b border-orange-700 flex-shrink-0">
+            <h1 class="text-xl font-bold">🐱 CatShop</h1>
+            <p class="text-orange-300 text-sm">Panel Admin</p>
+        </div>
 
-                <a href="{{ route('admin.customers.index') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-                          {{ request()->routeIs('admin.customers.*') ? 'bg-orange-700' : '' }}">
-                    <span>👥</span> Pelanggan
-                </a>
+        {{-- Menu Navigasi --}}
+        <nav class="flex-1 p-4 space-y-1 pb-6">
 
-                <a href="{{ route('admin.cats.index') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-                          {{ request()->routeIs('admin.cats.*') ? 'bg-orange-700' : '' }}">
-                    <span>🐱</span> Data Kucing
-                </a>
+            {{-- Dashboard --}}
+            <a href="{{ route('admin.dashboard') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.dashboard') ? 'bg-orange-700' : '' }}">
+                <span>📊</span> Dashboard
+            </a>
 
-                <div class="pt-4 pb-1 text-orange-<div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Layanan</div>
+            {{-- ─── MANAJEMEN ─── --}}
+            <div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Manajemen</div>
 
-<a href="{{ route('admin.boarding-bookings.index') }}"
-   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-          {{ request()->routeIs('admin.boarding-bookings.*') ? 'bg-orange-700' : '' }}">
-    <span>🏠</span> Penitipan
-</a>
+            <a href="{{ route('admin.customers.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.customers.*') ? 'bg-orange-700' : '' }}">
+                <span>👥</span> Pelanggan
+            </a>
 
-<a href="{{ route('admin.boarding-calendar') }}"
-   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-          {{ request()->routeIs('admin.boarding-calendar*') ? 'bg-orange-700' : '' }}">
-    <span>📅</span> Kalender Kamar
-</a>
+            <a href="{{ route('admin.cats.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.cats.*') ? 'bg-orange-700' : '' }}">
+                <span>🐱</span> Data Kucing
+            </a>
 
-<a href="{{ route('admin.rooms.index') }}"
-   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-          {{ request()->routeIs('admin.rooms.*') ? 'bg-orange-700' : '' }}">
-    <span>🚪</span> Kelola Kamar
-</a>
+            {{-- ─── LAYANAN ─── --}}
+            <div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Layanan</div>
 
-<a href="{{ route('admin.room-types.index') }}"
-   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-          {{ request()->routeIs('admin.room-types.*') ? 'bg-orange-700' : '' }}">
-    <span>📋</span> Tipe Kamar
-</a>            </nav>
+            <a href="{{ route('admin.grooming-bookings.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.grooming-bookings.*') ? 'bg-orange-700' : '' }}">
+                <span>✂️</span> Grooming
+            </a>
+
+            <a href="{{ route('admin.boarding-bookings.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.boarding-bookings.*') ? 'bg-orange-700' : '' }}">
+                <span>🏠</span> Penitipan
+            </a>
+
+            <a href="{{ route('admin.boarding-calendar') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.boarding-calendar*') ? 'bg-orange-700' : '' }}">
+                <span>📅</span> Kalender Kamar
+            </a>
+
+            <a href="{{ route('admin.rooms.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.rooms.*') ? 'bg-orange-700' : '' }}">
+                <span>🚪</span> Kelola Kamar
+            </a>
+
+            <a href="{{ route('admin.room-types.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.room-types.*') ? 'bg-orange-700' : '' }}">
+                <span>📋</span> Tipe Kamar
+            </a>
+
+            {{-- ─── PENJUALAN (Sprint 5) ─── --}}
+            <div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Penjualan</div>
+
+            {{-- Tombol Kasir diberi highlight khusus agar mudah diakses --}}
+            <a href="{{ route('admin.sales.pos') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg transition font-semibold
+                      bg-orange-500 hover:bg-orange-400
+                      {{ request()->routeIs('admin.sales.pos') ? 'ring-2 ring-white/50' : '' }}">
+                <span>🛒</span> Buka Kasir
+            </a>
+
+            <a href="{{ route('admin.sales.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.sales.index') || request()->routeIs('admin.sales.show') ? 'bg-orange-700' : '' }}">
+                <span>🧾</span> Riwayat Penjualan
+            </a>
+
+            {{-- ─── INVENTORI (Sprint 5) ─── --}}
+            <div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Inventori</div>
+
+            <a href="{{ route('admin.products.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.products.*') ? 'bg-orange-700' : '' }}">
+                <span>📦</span> Produk
+                {{-- Badge stok menipis --}}
+                @php
+                    $lowStockBadge = \App\Models\Product::where('is_active', true)
+                        ->whereColumn('stock', '<=', 'stock_min')
+                        ->count();
+                @endphp
+                @if($lowStockBadge > 0)
+                    <span class="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none">
+                        {{ $lowStockBadge }}
+                    </span>
+                @endif
+            </a>
+
+            <a href="{{ route('admin.categories.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.categories.*') ? 'bg-orange-700' : '' }}">
+                <span>🏷️</span> Kategori
+            </a>
+
+            <a href="{{ route('admin.stock-movements.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+                      {{ request()->routeIs('admin.stock-movements.*') ? 'bg-orange-700' : '' }}">
+                <span>📈</span> Riwayat Stok
+            </a>
 
             {{-- Info User yang Login --}}
             <div class="p-4 border-t border-orange-700">

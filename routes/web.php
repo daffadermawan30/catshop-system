@@ -1,19 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// Sprint 1 — Auth & Dashboard
 use App\Http\Controllers\Admin\DashboardController;
-// Sprint 2 — Pelanggan & Kucing
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\CatController;
-// Sprint 3 — Grooming
 use App\Http\Controllers\Admin\GroomingPackageController;
 use App\Http\Controllers\Admin\GroomingBookingController;
-// Sprint 4 — Penitipan
 use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\BoardingBookingController;
-// Sprint 5 — Produk, Stok, Kasir
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\StockMovementController;
@@ -95,24 +90,16 @@ Route::prefix('admin')
         Route::get('boarding-calendar/events', [BoardingBookingController::class, 'calendarEvents'])
             ->name('boarding-calendar.events');
 
-        // ── Sprint 5: Kategori ──────────────────────────────────────
         Route::resource('categories', CategoryController::class)->except(['show']);
 
-        // ── Sprint 5: Produk ────────────────────────────────────────
-        // PENTING: route statis /products/search/api harus didefinisikan
-        // SEBELUM Route::resource agar tidak tertangkap sebagai {product} parameter
         Route::get('products/search/api', [ProductController::class, 'search'])
             ->name('products.search');
 
         Route::resource('products', ProductController::class);
 
-        // ── Sprint 5: Stok ──────────────────────────────────────────
         Route::resource('stock-movements', StockMovementController::class)
             ->only(['index', 'create', 'store']);
 
-        // ── Sprint 5: Kasir / POS ───────────────────────────────────
-        // Route POS juga harus di atas Route::resource agar /sales/pos
-        // tidak tertangkap sebagai /sales/{sale} (show)
         Route::get('sales/pos', [SaleController::class, 'create'])
             ->name('sales.pos');
 

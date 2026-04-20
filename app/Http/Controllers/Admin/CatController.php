@@ -18,25 +18,23 @@ class CatController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->format === 'json') {
-            $cats = Cat::where('is_active', true)
-                ->when(
-                    $request->customer_id,
-                    fn($q) => $q->where('customer_id', $request->customer_id)
-                )
+        // Jika dipanggil sebagai JSON (dari AJAX di halaman boarding/grooming create)
+        if ($request->filled('customer_id') && $request->get('format') === 'json') {
+            $cats = Cat::where('customer_id', $request->customer_id)
+                ->where('is_active', true)
                 ->get(['id', 'name', 'breed']);
 
             return response()->json($cats);
         }
 
+        // Tampilan normal halaman daftar kucing
         $cats = Cat::with('customer')
-            ->where('is_active', true)
+            ->when($request->filled('search'), fn($q) => $q->where('name', 'like', '%' . $request->search . '%'))
             ->latest()
-            ->paginate(12);
+            ->paginate(20);
 
         return view('admin.cats.index', compact('cats'));
     }
-
     /**
      * create() — Form tambah kucing baru
      * URL: GET /admin/cats/create
