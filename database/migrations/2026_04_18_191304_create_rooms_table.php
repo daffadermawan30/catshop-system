@@ -9,17 +9,17 @@ return new class extends Migration {
     {
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('room_type_id')->constrained('room_types');
-            // Nomor atau nama kamar, contoh: "A1", "VIP-1"
-            $table->string('room_number')->unique();
-            // Status kamar saat ini
-            $table->enum('status', [
-                'available',  // Kosong, bisa dipesan
-                'occupied',   // Sedang ditempati kucing
-                'maintenance',// Sedang dibersihkan/diperbaiki
-            ])->default('available');
+            $table->foreignId('room_type_id')
+                  ->constrained('room_types')
+                  ->cascadeOnDelete();
+            $table->string('room_number');    // Contoh: R-01, VIP-03
+            $table->enum('status', ['available', 'occupied', 'maintenance'])
+                  ->default('available');
             $table->text('notes')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->unique('room_number');
         });
     }
 

@@ -9,13 +9,10 @@ return new class extends Migration {
     {
         Schema::create('room_types', function (Blueprint $table) {
             $table->id();
-            // Contoh: "Standar", "VIP", "Suite"
-            $table->string('name');
+            $table->string('name');           // Contoh: Standard, Deluxe, VIP
             $table->text('description')->nullable();
-            // Harga per malam dalam rupiah
-            $table->decimal('price_per_night', 10, 2);
-            // Fasilitas yang tersedia (AC, mainan, dll.)
-            $table->text('facilities')->nullable();
+            $table->decimal('price_per_day', 10, 2); // Harga per malam
+            $table->string('facilities')->nullable();  // JSON atau teks: AC, TV, Mainan
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

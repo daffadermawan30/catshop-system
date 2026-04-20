@@ -2,52 +2,52 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class Room extends Model
 {
-    use HasFactory;
-    use Notifiable;
-
     protected $fillable = [
-        'name', 'email', 'password',
-        'role_id', 'phone', 'address', 'is_active',
+        'room_type_id', 'room_number', 'status', 'notes', 'is_active',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
-    protected function casts(): array
+    // Relasi ke tipe kamar
+    public function roomType()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'is_active'         => 'boolean',
-        ];
+        return $this->belongsTo(RoomType::class);
     }
 
-    // Relasi ke role
-    public function role()
+    // Semua booking yang pernah ada di kamar ini
+    public function boardingBookings()
     {
-        return $this->belongsTo(Role::class);
+        return $this->hasMany(BoardingBooking::class);
     }
 
-    // Relasi ke profil customer (jika user adalah pelanggan)
-    public function customer()
+    // Booking aktif saat ini (status checked_in)
+    public function activeBooking()
     {
-        return $this->hasOne(Customer::class);
+        return $this->hasOne(BoardingBooking::class)->where('status', 'checked_in');
     }
 
-    // Helper: cek apakah user adalah admin
-    public function isAdmin(): bool
+    // Cek apakah kamar tersedia pada rentang tanggal tertentu
+    // Digunakan saat membuat booking baru untuk validasi konflik
+    public function isAvailableFor(string $checkIn, string $checkOut, ?int $excludeBookingId = null): bool
     {
-        return $this->role?->name === 'admin';
-    }
+        $query = $this->boardingBookings()
+            ->whereNotIn('status', ['cancelled', 'checked_out'])
+            // Logika overlap: booking baru konflik jika ada booking lain
+            // yang check_in-nya sebelum check_out baru DAN check_out-nya setelah check_in baru
+            ->where('check_in_date', '<', $checkOut)
+            ->where('check_out_date', '>', $checkIn);
 
-    // Helper: cek apakah user adalah pelanggan
-    public function isCustomer(): bool
-    {
-        return $this->role?->name === 'pelanggan';
+        // Saat edit, exclude booking itu sendiri agar tidak konflik dengan dirinya
+        if ($excludeBookingId) {
+            $query->where('id', '!=', $excludeBookingId);
+        }
+
+        return $query->doesntExist();
     }
 }

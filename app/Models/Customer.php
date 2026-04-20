@@ -7,28 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     protected $fillable = [
-        'user_id', 'name', 'phone', 'address', 'identity_number', 'gender',
+        'user_id', 'name', 'phone', 'address', 'gender', 'identity_number',
     ];
 
-    // Satu customer punya satu akun user
+    // Relasi ke akun user (login)
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Satu customer bisa punya banyak kucing
+    // Satu pelanggan bisa punya banyak kucing
     public function cats()
     {
         return $this->hasMany(Cat::class);
     }
 
-    // Semua booking grooming milik customer ini
+    // Riwayat booking grooming pelanggan ini
+    // Ini yang menyebabkan error di CustomerController::show()
     public function groomingBookings()
     {
         return $this->hasMany(GroomingBooking::class);
     }
 
-    // Semua booking penitipan milik customer ini
+    // Riwayat booking penitipan pelanggan ini
+    // Dipakai di Sprint 4
     public function boardingBookings()
     {
         return $this->hasMany(BoardingBooking::class);

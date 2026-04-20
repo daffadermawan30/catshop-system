@@ -3,51 +3,58 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class BoardingBooking extends Model
 {
     protected $fillable = [
         'customer_id', 'cat_id', 'room_id',
-        'checkin_date', 'checkout_date', 'actual_checkin', 'actual_checkout',
-        'status', 'checkin_weight', 'checkin_notes', 'checkout_notes',
-        'food_instructions', 'medication_instructions',
-        'total_price', 'customer_notes',
+        'check_in_date', 'check_out_date',
+        'actual_check_in', 'actual_check_out',
+        'status', 'duration_days',
+        'price_per_day', 'total_price',
+        'customer_notes', 'admin_notes',
     ];
 
     protected $casts = [
-        'checkin_date'    => 'date',
-        'checkout_date'   => 'date',
-        'actual_checkin'  => 'datetime',
-        'actual_checkout' => 'datetime',
-        'total_price'     => 'decimal:2',
+        'check_in_date'    => 'date',
+        'check_out_date'   => 'date',
+        'actual_check_in'  => 'datetime',
+        'actual_check_out' => 'datetime',
+        'price_per_day'    => 'decimal:2',
+        'total_price'      => 'decimal:2',
     ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
+
     public function cat()
     {
         return $this->belongsTo(Cat::class);
     }
+
     public function room()
     {
         return $this->belongsTo(Room::class);
     }
 
+    // Jurnal harian selama kucing dititipkan
     public function journals()
     {
-        return $this->hasMany(BoardingJournal::class);
+        return $this->hasMany(BoardingJournal::class)->orderBy('journal_date');
     }
 
-    public function payment()
+    // Helper: hitung durasi dari tanggal check-in dan check-out
+    public function calculateDuration(): int
     {
-        return $this->morphOne(Payment::class, 'payable');
+        return max(1, $this->check_in_date->diffInDays($this->check_out_date));
     }
 
-    // Hitung jumlah malam penitipan
-    public function getDurationAttribute(): int
+    // Helper: hitung total harga
+    public function calculateTotal(): float
     {
-        return $this->checkin_date->diffInDays($this->checkout_date);
+        return $this->calculateDuration() * $this->price_per_day;
     }
 }

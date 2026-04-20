@@ -47,30 +47,29 @@
 
                 <div class="pt-4 pb-1 text-orange-<div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Layanan</div>
 
-<a href="{{ route('admin.grooming-packages.index') }}"
+<a href="{{ route('admin.boarding-bookings.index') }}"
    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-          {{ request()->routeIs('admin.grooming-packages.*') ? 'bg-orange-700' : '' }}">
-    <span>📦</span> Paket Grooming
-</a>
-
-<a href="{{ route('admin.grooming-bookings.index') }}"
-   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-          {{ request()->routeIs('admin.grooming-bookings.*') ? 'bg-orange-700' : '' }}">
-    <span>✂️</span> Booking Grooming
-</a>
-
-<a href="{{ route('admin.grooming-calendar') }}"
-   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
-          {{ request()->routeIs('admin.grooming-calendar*') ? 'bg-orange-700' : '' }}">
-    <span>📅</span> Kalender Jadwal
-</a>
-
-<a href="#"
-   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition text-orange-300">
+          {{ request()->routeIs('admin.boarding-bookings.*') ? 'bg-orange-700' : '' }}">
     <span>🏠</span> Penitipan
-    <span class="ml-auto text-xs bg-orange-600 px-1.5 rounded">Sprint 4</span>
 </a>
-            </nav>
+
+<a href="{{ route('admin.boarding-calendar') }}"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+          {{ request()->routeIs('admin.boarding-calendar*') ? 'bg-orange-700' : '' }}">
+    <span>📅</span> Kalender Kamar
+</a>
+
+<a href="{{ route('admin.rooms.index') }}"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+          {{ request()->routeIs('admin.rooms.*') ? 'bg-orange-700' : '' }}">
+    <span>🚪</span> Kelola Kamar
+</a>
+
+<a href="{{ route('admin.room-types.index') }}"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-orange-700 transition
+          {{ request()->routeIs('admin.room-types.*') ? 'bg-orange-700' : '' }}">
+    <span>📋</span> Tipe Kamar
+</a>            </nav>
 
             {{-- Info User yang Login --}}
             <div class="p-4 border-t border-orange-700">

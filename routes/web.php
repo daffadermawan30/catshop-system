@@ -1,24 +1,34 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+// Sprint 1 — Auth & Dashboard
 use App\Http\Controllers\Admin\DashboardController;
+// Sprint 2 — Pelanggan & Kucing
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\CatController;
+// Sprint 3 — Grooming
 use App\Http\Controllers\Admin\GroomingPackageController;
 use App\Http\Controllers\Admin\GroomingBookingController;
+// Sprint 4 — Penitipan
+use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\BoardingBookingController;
+// Sprint 5 — Produk, Stok, Kasir
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\StockMovementController;
+use App\Http\Controllers\Admin\SaleController;
 
 /*
 |--------------------------------------------------------------------------
-| Halaman publik
+| Halaman publik — redirect ke login
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    return redirect('/login');
-});
+Route::get('/', fn() => redirect('/login'));
 
 /*
 |--------------------------------------------------------------------------
-| Routes Admin (hanya bisa diakses jika login sebagai admin)
+| Routes Admin
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')
@@ -26,48 +36,102 @@ Route::prefix('admin')
     ->middleware(['auth', 'role:admin'])
     ->group(function () {
 
+        // ── Dashboard ───────────────────────────────────────────────
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
+        // ── Sprint 2: Pelanggan & Kucing ────────────────────────────
         Route::resource('customers', CustomerController::class);
         Route::resource('cats', CatController::class);
 
-        // Paket grooming
+        // ── Sprint 3: Grooming ──────────────────────────────────────
         Route::resource('grooming-packages', GroomingPackageController::class);
-
-        // Booking grooming
         Route::resource('grooming-bookings', GroomingBookingController::class);
 
-        // Route khusus untuk update status dan input catatan
         Route::patch(
             'grooming-bookings/{groomingBooking}/status',
             [GroomingBookingController::class, 'updateStatus']
-        )
-            ->name('grooming-bookings.update-status');
+        )->name('grooming-bookings.update-status');
 
         Route::get(
             'grooming-bookings/{groomingBooking}/record',
             [GroomingBookingController::class, 'recordForm']
-        )
-            ->name('grooming-bookings.record-form');
+        )->name('grooming-bookings.record-form');
 
         Route::post(
             'grooming-bookings/{groomingBooking}/record',
             [GroomingBookingController::class, 'storeRecord']
-        )
-            ->name('grooming-bookings.store-record');
+        )->name('grooming-bookings.store-record');
 
-        // Route kalender — mengembalikan data JSON untuk FullCalendar
         Route::get('grooming-calendar', [GroomingBookingController::class, 'calendar'])
             ->name('grooming-calendar');
 
         Route::get('grooming-calendar/events', [GroomingBookingController::class, 'calendarEvents'])
             ->name('grooming-calendar.events');
+
+        // ── Sprint 4: Penitipan ─────────────────────────────────────
+        Route::resource('room-types', RoomTypeController::class)->except(['show']);
+        Route::resource('rooms', RoomController::class)->except(['show']);
+        Route::resource('boarding-bookings', BoardingBookingController::class);
+
+        Route::patch(
+            'boarding-bookings/{boardingBooking}/status',
+            [BoardingBookingController::class, 'updateStatus']
+        )->name('boarding-bookings.update-status');
+
+        Route::get(
+            'boarding-bookings/{boardingBooking}/journal',
+            [BoardingBookingController::class, 'journalForm']
+        )->name('boarding-bookings.journal-form');
+
+        Route::post(
+            'boarding-bookings/{boardingBooking}/journal',
+            [BoardingBookingController::class, 'storeJournal']
+        )->name('boarding-bookings.store-journal');
+
+        Route::get('boarding-calendar', fn() => view('admin.boarding-bookings.calendar'))
+            ->name('boarding-calendar');
+
+        Route::get('boarding-calendar/events', [BoardingBookingController::class, 'calendarEvents'])
+            ->name('boarding-calendar.events');
+
+        // ── Sprint 5: Kategori ──────────────────────────────────────
+        Route::resource('categories', CategoryController::class)->except(['show']);
+
+        // ── Sprint 5: Produk ────────────────────────────────────────
+        // PENTING: route statis /products/search/api harus didefinisikan
+        // SEBELUM Route::resource agar tidak tertangkap sebagai {product} parameter
+        Route::get('products/search/api', [ProductController::class, 'search'])
+            ->name('products.search');
+
+        Route::resource('products', ProductController::class);
+
+        // ── Sprint 5: Stok ──────────────────────────────────────────
+        Route::resource('stock-movements', StockMovementController::class)
+            ->only(['index', 'create', 'store']);
+
+        // ── Sprint 5: Kasir / POS ───────────────────────────────────
+        // Route POS juga harus di atas Route::resource agar /sales/pos
+        // tidak tertangkap sebagai /sales/{sale} (show)
+        Route::get('sales/pos', [SaleController::class, 'create'])
+            ->name('sales.pos');
+
+        Route::get('sales', [SaleController::class, 'index'])
+            ->name('sales.index');
+
+        Route::post('sales', [SaleController::class, 'store'])
+            ->name('sales.store');
+
+        Route::get('sales/{sale}', [SaleController::class, 'show'])
+            ->name('sales.show');
+
+        Route::delete('sales/{sale}', [SaleController::class, 'destroy'])
+            ->name('sales.destroy');
     });
 
 /*
 |--------------------------------------------------------------------------
-| Routes Pelanggan (akan ditambah di sprint berikutnya)
+| Routes Pelanggan (Sprint 6)
 |--------------------------------------------------------------------------
 */
 Route::prefix('pelanggan')
