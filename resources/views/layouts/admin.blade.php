@@ -100,6 +100,15 @@
                 <span>🧾</span> Riwayat Penjualan
             </a>
 
+            <a href="{{ route('admin.reports.index') }}"
+       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm
+              {{ request()->routeIs('admin.reports.*')
+                 ? 'bg-orange-100 text-orange-700 font-semibold'
+                 : 'text-gray-600 hover:bg-gray-100' }}">
+        <span>📊</span>
+        <span>Laporan</span>
+    </a>
+
             {{-- ─── INVENTORI (Sprint 5) ─── --}}
             <div class="pt-4 pb-1 text-orange-400 text-xs uppercase tracking-wider">Inventori</div>
 

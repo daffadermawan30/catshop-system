@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\PublicBookingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\CatController;
@@ -13,13 +15,23 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\StockMovementController;
 use App\Http\Controllers\Admin\SaleController;
+use App\Http\Controllers\Admin\ReportController;
 
 /*
 |--------------------------------------------------------------------------
-| Halaman publik — redirect ke login
+| Halaman Publik (Landing Page & Booking Publik)
 |--------------------------------------------------------------------------
 */
-Route::get('/', fn() => redirect('/login'));
+// Routes Landing Page
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/layanan', [HomeController::class, 'services'])->name('services');
+Route::get('/tentang', [HomeController::class, 'about'])->name('about');
+Route::get('/galeri', [HomeController::class, 'gallery'])->name('gallery');
+
+// Booking Publik (Guest diperbolehkan)
+Route::get('/booking', [PublicBookingController::class, 'create'])->name('public.booking');
+Route::post('/booking', [PublicBookingController::class, 'store'])->name('public.booking.store');
+Route::get('/booking/sukses', [PublicBookingController::class, 'success'])->name('public.booking.success');
 
 /*
 |--------------------------------------------------------------------------
@@ -31,15 +43,12 @@ Route::prefix('admin')
     ->middleware(['auth', 'role:admin'])
     ->group(function () {
 
-        // ── Dashboard ───────────────────────────────────────────────
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
-        // ── Sprint 2: Pelanggan & Kucing ────────────────────────────
         Route::resource('customers', CustomerController::class);
         Route::resource('cats', CatController::class);
 
-        // ── Sprint 3: Grooming ──────────────────────────────────────
         Route::resource('grooming-packages', GroomingPackageController::class);
         Route::resource('grooming-bookings', GroomingBookingController::class);
 
@@ -64,7 +73,6 @@ Route::prefix('admin')
         Route::get('grooming-calendar/events', [GroomingBookingController::class, 'calendarEvents'])
             ->name('grooming-calendar.events');
 
-        // ── Sprint 4: Penitipan ─────────────────────────────────────
         Route::resource('room-types', RoomTypeController::class)->except(['show']);
         Route::resource('rooms', RoomController::class)->except(['show']);
         Route::resource('boarding-bookings', BoardingBookingController::class);
@@ -114,6 +122,13 @@ Route::prefix('admin')
 
         Route::delete('sales/{sale}', [SaleController::class, 'destroy'])
             ->name('sales.destroy');
+
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])            ->name('index');
+            Route::get('/export/sales', [ReportController::class, 'exportSalesExcel']) ->name('export.sales');
+            Route::get('/export/grooming', [ReportController::class,'exportGroomingExcel'])->name('export.grooming');
+            Route::get('/export/pdf', [ReportController::class, 'exportPdf'])        ->name('export.pdf');
+        });
     });
 
 /*

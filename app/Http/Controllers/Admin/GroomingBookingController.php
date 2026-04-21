@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\WhatsAppService;
+use App\Mail\BookingConfirmationMail;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGroomingBookingRequest;
 use App\Http\Requests\StoreGroomingRecordRequest;
@@ -84,6 +87,49 @@ class GroomingBookingController extends Controller
             'customer_notes' => $request->customer_notes,
             'total_price'    => $package->price,
         ]);
+
+        $customer = $booking->customer;
+        $cat      = $booking->cat;
+        $package  = $booking->package;
+
+        // Kirim WA ke pelanggan
+        $wa = new WhatsAppService();
+        if ($customer->phone) {
+            $wa->sendGroomingConfirmation(
+                phone: $customer->phone,
+                customerName: $customer->name,
+                catName: $cat->name,
+                packageName: $package->name,
+                date: $booking->scheduled_date->format('d M Y'),
+                time: $booking->scheduled_time ?? '-',
+            );
+        }
+
+        // Kirim email jika ada
+        if ($customer->email) {
+            Mail::to($customer->email)->queue(new BookingConfirmationMail(
+                customerName: $customer->name,
+                catName: $cat->name,
+                serviceType: 'Grooming',
+                packageName: $package->name,
+                date: $booking->scheduled_date->format('d M Y'),
+                time: $booking->scheduled_time ?? '',
+                estimatedCost: $package->price,
+            ));
+        }
+
+        // Notifikasi owner
+        $ownerPhone = config('catshop.owner_phone');
+        if ($ownerPhone) {
+            $wa->sendNewBookingAlert(
+                ownerPhone: $ownerPhone,
+                serviceType: 'Grooming',
+                customerName: $customer->name,
+                catName: $cat->name,
+                date: $booking->scheduled_date->format('d M Y'),
+            );
+        }
+
 
         return redirect()
             ->route('admin.grooming-bookings.index')
